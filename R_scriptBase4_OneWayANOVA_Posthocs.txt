@@ -1,0 +1,38 @@
+ALERT: Do not copy and paste! Type in the R console yourself!
+
+> install.packages(“readr”)
+
+> library (readr) # It offers functions for reading CSVs. 
+
+> install.packages(“car”)
+
+> library(car)
+
+> install.packages(“carData”)
+
+> library(carData)
+
+> file_path = file.choose() # alternatively you can use file_path <- file.choose()
+
+> dt = read_csv(file_path)
+
+> str(dt)
+
+> head(dt)
+
+> tail(dt)
+
+> print(colnames(dt))
+
+> anova_result = aov(f0 ~ stop, data = dt)
+
+> summary(anova_result)
+
+> tukey_result = TukeyHSD(anova_result)
+
+> print(tukey_result) 
+
+> pairwise.t.test(dt$f0, dt$stop, p.adjust.method = "bonferroni")
+
+
+
