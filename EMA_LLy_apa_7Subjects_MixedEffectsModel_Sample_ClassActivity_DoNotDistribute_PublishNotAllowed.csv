@@ -1,0 +1,225 @@
+﻿Subject,Sequence,Sentence,Boundary,SpeechRate,TokenNumber,LLy_ConstrictionDur,LLy_Max
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,1,14,-15.4
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,2,14,-14.6
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,3,11.1,-15.1
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,4,14,-15.6
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,5,12,-15.5
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,6,10,-14.2
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,7,12,-15.1
+K10,apa,아바이 동무는 북한말이야,Within-word,fast,8,12,-14.2
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,1,28,-14.8
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,2,16,-14.7
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,3,22,-14
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,4,24,-13.2
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,5,23.7,-13.8
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,6,16,-15
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,7,28,-13.2
+K10,apa,아바이 동무는 북한말이야,Within-word,comf,8,24,-15.3
+K10,apa,전아 바가지를 팔아,across word,fast,1,9.5,-18.8
+K10,apa,전아 바가지를 팔아,across word,fast,2,12,-19.5
+K10,apa,전아 바가지를 팔아,across word,fast,3,10,-19.9
+K10,apa,전아 바가지를 팔아,across word,fast,4,9.1,-19.7
+K10,apa,전아 바가지를 팔아,across word,fast,5,10,-18.9
+K10,apa,전아 바가지를 팔아,across word,fast,6,14,-19.1
+K10,apa,전아 바가지를 팔아,across word,fast,7,12,-18.7
+K10,apa,전아 바가지를 팔아,across word,fast,8,10,-19.1
+K10,apa,전아 바가지를 팔아,across word,comf,1,38,-13.8
+K10,apa,전아 바가지를 팔아,across word,comf,2,36,-14.3
+K10,apa,전아 바가지를 팔아,across word,comf,3,16,-14.6
+K10,apa,전아 바가지를 팔아,across word,comf,4,18,-15.2
+K10,apa,전아 바가지를 팔아,across word,comf,5,18,-15.4
+K10,apa,전아 바가지를 팔아,across word,comf,6,26,-15
+K10,apa,전아 바가지를 팔아,across word,comf,7,20,-13.4
+K10,apa,전아 바가지를 팔아,across word,comf,8,44,-15.5
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,1,12,-16.6
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,2,14,-15.5
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,3,13.8,-15.7
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,4,16,-15.5
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,5,14,-17.1
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,6,18,-16.3
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,7,14,-14.6
+K12,apa,아바이 동무는 북한말이야,Within-word,fast,8,14,-15.5
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,1,16,-17.2
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,2,22,-14.3
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,3,14,-15.1
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,4,16,-13.6
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,5,14,-15.5
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,6,20,-15.4
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,7,12,-15.7
+K12,apa,아바이 동무는 북한말이야,Within-word,comf,8,14,-15.7
+K12,apa,전아 바가지를 팔아,across word,fast,1,12,-14.5
+K12,apa,전아 바가지를 팔아,across word,fast,2,10,-15.4
+K12,apa,전아 바가지를 팔아,across word,fast,3,14,-15.3
+K12,apa,전아 바가지를 팔아,across word,fast,4,10,-15.6
+K12,apa,전아 바가지를 팔아,across word,fast,5,12,-13.9
+K12,apa,전아 바가지를 팔아,across word,fast,6,14,-14.9
+K12,apa,전아 바가지를 팔아,across word,fast,7,14,-13.3
+K12,apa,전아 바가지를 팔아,across word,fast,8,14,-14
+K12,apa,전아 바가지를 팔아,across word,comf,1,17.6,-15.8
+K12,apa,전아 바가지를 팔아,across word,comf,2,14,-14.5
+K12,apa,전아 바가지를 팔아,across word,comf,3,10,-15.8
+K12,apa,전아 바가지를 팔아,across word,comf,4,12,-16
+K12,apa,전아 바가지를 팔아,across word,comf,5,12,-17.1
+K12,apa,전아 바가지를 팔아,across word,comf,6,14,-16.8
+K12,apa,전아 바가지를 팔아,across word,comf,7,14,-15.4
+K12,apa,전아 바가지를 팔아,across word,comf,8,14,-15.7
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,1,13.2,-17
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,2,12,-18.2
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,3,12,-19.3
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,4,15.1,-18.1
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,5,12,-17.8
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,6,20,-18.2
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,7,18,-17.3
+K14,apa,아바이 동무는 북한말이야,Within-word,fast,8,12,-19
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,1,22,-13.9
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,2,20,-13.3
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,3,16,-13.9
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,4,17.6,-14.7
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,5,18.5,-13.6
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,6,20,-14
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,7,24,-13.9
+K14,apa,아바이 동무는 북한말이야,Within-word,comf,8,28,-14.8
+K14,apa,전아 바가지를 팔아,across word,fast,1,12,-18.2
+K14,apa,전아 바가지를 팔아,across word,fast,2,10,-18.2
+K14,apa,전아 바가지를 팔아,across word,fast,3,14,-18.4
+K14,apa,전아 바가지를 팔아,across word,fast,4,14,-17.9
+K14,apa,전아 바가지를 팔아,across word,fast,5,12,-18.1
+K14,apa,전아 바가지를 팔아,across word,fast,6,10,-18
+K14,apa,전아 바가지를 팔아,across word,fast,7,16,-17.6
+K14,apa,전아 바가지를 팔아,across word,fast,8,17.7,-18.3
+K14,apa,전아 바가지를 팔아,across word,comf,1,12,-15.7
+K14,apa,전아 바가지를 팔아,across word,comf,2,9.6,-15.4
+K14,apa,전아 바가지를 팔아,across word,comf,3,14,-14.5
+K14,apa,전아 바가지를 팔아,across word,comf,4,13.6,-15.6
+K14,apa,전아 바가지를 팔아,across word,comf,5,12,-14.9
+K14,apa,전아 바가지를 팔아,across word,comf,6,18,-15
+K14,apa,전아 바가지를 팔아,across word,comf,7,46,-15.9
+K14,apa,전아 바가지를 팔아,across word,comf,8,12,-16.1
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,1,10.8,-20.7
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,2,12,-17.6
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,3,10.2,-17.4
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,4,12,-18.1
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,5,14,-16.9
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,6,10,-18.1
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,7,10,-17.6
+K15,apa,아바이 동무는 북한말이야,Within-word,fast,8,12,-18.4
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,1,10,-16.4
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,2,12,-17.6
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,3,10,-15.2
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,4,12,-17.8
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,5,10,-15.8
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,6,14,-15
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,7,40,-16.1
+K15,apa,아바이 동무는 북한말이야,Within-word,comf,8,14,-16.5
+K15,apa,전아 바가지를 팔아,across word,fast,1,10,-17.4
+K15,apa,전아 바가지를 팔아,across word,fast,2,12,-17.1
+K15,apa,전아 바가지를 팔아,across word,fast,3,12,-18.1
+K15,apa,전아 바가지를 팔아,across word,fast,4,10,-18.2
+K15,apa,전아 바가지를 팔아,across word,fast,5,10,-17.3
+K15,apa,전아 바가지를 팔아,across word,fast,6,11.6,-18.5
+K15,apa,전아 바가지를 팔아,across word,fast,7,10,-19.2
+K15,apa,전아 바가지를 팔아,across word,fast,8,12,-19.2
+K15,apa,전아 바가지를 팔아,across word,comf,1,12,-16.6
+K15,apa,전아 바가지를 팔아,across word,comf,2,16,-16.3
+K15,apa,전아 바가지를 팔아,across word,comf,3,16,-18
+K15,apa,전아 바가지를 팔아,across word,comf,4,14,-16.4
+K15,apa,전아 바가지를 팔아,across word,comf,5,18,-16.4
+K15,apa,전아 바가지를 팔아,across word,comf,6,12,-17.6
+K15,apa,전아 바가지를 팔아,across word,comf,7,10,-17.6
+K15,apa,전아 바가지를 팔아,across word,comf,8,12.8,-18.5
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,1,12,-16
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,2,14,-13.7
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,3,10,-15.5
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,4,18,-14
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,5,14,-14.7
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,6,12,-14.7
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,7,12,-15.5
+K16,apa,아바이 동무는 북한말이야,Within-word,fast,8,14,-14.2
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,1,14,-15.6
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,2,12,-14.9
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,3,18,-13.8
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,4,18,-14.8
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,5,16,-16
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,6,14,-15.8
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,7,16,-15.2
+K16,apa,아바이 동무는 북한말이야,Within-word,comf,8,20,-16
+K16,apa,전아 바가지를 팔아,across word,fast,1,14,-13.4
+K16,apa,전아 바가지를 팔아,across word,fast,2,16,-10.7
+K16,apa,전아 바가지를 팔아,across word,fast,3,12,-13.1
+K16,apa,전아 바가지를 팔아,across word,fast,4,10,-14.1
+K16,apa,전아 바가지를 팔아,across word,fast,5,14,-13.9
+K16,apa,전아 바가지를 팔아,across word,fast,6,12.5,-13
+K16,apa,전아 바가지를 팔아,across word,fast,7,14,-13.6
+K16,apa,전아 바가지를 팔아,across word,fast,8,12,-14.4
+K16,apa,전아 바가지를 팔아,across word,comf,1,23,-12.8
+K16,apa,전아 바가지를 팔아,across word,comf,2,18,-11.5
+K16,apa,전아 바가지를 팔아,across word,comf,3,22,-13.3
+K16,apa,전아 바가지를 팔아,across word,comf,4,12.2,-13
+K16,apa,전아 바가지를 팔아,across word,comf,5,26,-12.3
+K16,apa,전아 바가지를 팔아,across word,comf,6,22.4,-12.3
+K16,apa,전아 바가지를 팔아,across word,comf,7,20,-12.4
+K16,apa,전아 바가지를 팔아,across word,comf,8,18,-12.6
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,1,12,-13.3
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,2,12,-14.1
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,3,12.5,-14.1
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,4,10,-13.4
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,5,14,-13.9
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,6,10,-13.8
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,7,30,-15.1
+K17,apa,아바이 동무는 북한말이야,Within-word,fast,8,12,-13.5
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,1,10,-16.5
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,2,16.2,-16.7
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,3,14,-17.3
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,4,14.7,-16.7
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,5,10,-16.6
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,6,14,-15.8
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,7,14.9,-14.7
+K17,apa,아바이 동무는 북한말이야,Within-word,comf,8,12,-15.3
+K17,apa,전아 바가지를 팔아,across word,fast,1,10,-13.2
+K17,apa,전아 바가지를 팔아,across word,fast,2,12,-14.2
+K17,apa,전아 바가지를 팔아,across word,fast,3,14,-14.2
+K17,apa,전아 바가지를 팔아,across word,fast,4,14,-12.9
+K17,apa,전아 바가지를 팔아,across word,fast,5,12,-13.8
+K17,apa,전아 바가지를 팔아,across word,fast,6,12,-13.8
+K17,apa,전아 바가지를 팔아,across word,fast,7,10,-16.2
+K17,apa,전아 바가지를 팔아,across word,fast,8,12,-14.6
+K17,apa,전아 바가지를 팔아,across word,comf,1,12,-15.8
+K17,apa,전아 바가지를 팔아,across word,comf,2,10,-16
+K17,apa,전아 바가지를 팔아,across word,comf,3,10,-15.4
+K17,apa,전아 바가지를 팔아,across word,comf,4,12,-16.1
+K17,apa,전아 바가지를 팔아,across word,comf,5,10,-15.8
+K17,apa,전아 바가지를 팔아,across word,comf,6,28,-17
+K17,apa,전아 바가지를 팔아,across word,comf,7,12,-15.7
+K17,apa,전아 바가지를 팔아,across word,comf,8,10,-15.6
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,1,14.6,-13.3
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,2,14,-12.7
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,3,16,-12.2
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,4,16,-11.5
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,5,14,-15
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,6,16,-10.8
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,7,14,-11.8
+K18,apa,아바이 동무는 북한말이야,Within-word,fast,8,16,-13.5
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,1,12,-15.2
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,2,22,-15.6
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,3,26,-15.2
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,4,20,-15.2
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,5,18,-13.5
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,6,16,-14.1
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,7,22,-14.4
+K18,apa,아바이 동무는 북한말이야,Within-word,comf,8,16,-14.7
+K18,apa,전아 바가지를 팔아,across word,fast,1,16,-16.8
+K18,apa,전아 바가지를 팔아,across word,fast,2,14,-17.1
+K18,apa,전아 바가지를 팔아,across word,fast,3,,
+K18,apa,전아 바가지를 팔아,across word,fast,4,12,-15.4
+K18,apa,전아 바가지를 팔아,across word,fast,5,14,-16.5
+K18,apa,전아 바가지를 팔아,across word,fast,6,16,-16.9
+K18,apa,전아 바가지를 팔아,across word,fast,7,14,-16.5
+K18,apa,전아 바가지를 팔아,across word,fast,8,10,-16.1
+K18,apa,전아 바가지를 팔아,across word,comf,1,14,-17.6
+K18,apa,전아 바가지를 팔아,across word,comf,2,16.2,-16.4
+K18,apa,전아 바가지를 팔아,across word,comf,3,16,-16.4
+K18,apa,전아 바가지를 팔아,across word,comf,4,16,-17.3
+K18,apa,전아 바가지를 팔아,across word,comf,5,16,-17.6
+K18,apa,전아 바가지를 팔아,across word,comf,6,16,-17.5
+K18,apa,전아 바가지를 팔아,across word,comf,7,14,-15.5
+K18,apa,전아 바가지를 팔아,across word,comf,8,12,-17.2
