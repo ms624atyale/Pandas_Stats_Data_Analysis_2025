@@ -1,0 +1,65 @@
+# LMER for R Console 
+# Do not copy and paste. Type in R console yourself!
+
+
+> install.packages("readr")
+
+> library(readr)
+
+> install.packages("car")
+
+> library(car)
+
+> library(carData)
+
+# Mixed-Effects Model
+
+> install.packages("lme4") #Mixed-Effects Model
+
+> library(lme4)
+
+> library(Matrix)
+
+> install.packages("nlme") #Mixed-Effects Model
+
+> library(nlme)
+
+> install.packages("lmerTest")
+
+> library(lmerTest)
+
+# Conduct Linear Regression Model and Mixed-Effects Model in sequence and compare them. 
+
+# Linear Regression Model
+
+> file_path = file.choose()
+
+> str(dt)
+
+> head(dt)
+
+> tail(dt)
+
+# Linear Regression Model
+
+> m1 = lm(LLy_Max ~ SpeechRate, data = dt)
+
+> summary(m1)
+
+# Alternatively
+
+> summary(lm(LLy_Max ~ SpeechRate, data = dt))
+
+
+# Mixed-Effects Model
+
+> m2 = lmer(LLy_Max ~ SpeechRate + (1|Subject), data = dt)
+
+> summary(m2)
+
+# Alternatively
+
+> lmer(LLy_Max ~ SpeechRate + (1|Subject), data = dt)
+
+> summary(lmer(LLy_Max ~ SpeechRate + (1|Subject), data = dt))
+
