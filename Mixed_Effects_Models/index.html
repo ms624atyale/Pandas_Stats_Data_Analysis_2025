@@ -1,1 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mixed-Effects Model for Speech Rate and C Type</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root{
+    --bg1:#f7fbff;
+    --bg2:#eef6ff;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#5b6472;
+    --blue:#3b82f6;
+    --blue2:#93c5fd;
+    --green:#10b981;
+    --orange:#f59e0b;
+    --pink:#ec4899;
+    --purple:#8b5cf6;
+    --border:#dbeafe;
+    --shadow:0 10px 30px rgba(59,130,246,.12);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    line-height:1.65;
+  }
+  header{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    padding:42px 20px 34px;
+    text-align:center;
+  }
+  header h1{margin:0 0 10px;font-size:2.1rem}
+  header p{margin:0 auto;max-width:900px;font-size:1.05rem;opacity:.95}
+  .container{max-width:1150px;margin:0 auto;padding:28px 18px 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:22px;
+  }
+  h2{margin-top:0;color:#1d4ed8}
+  h3{margin:.2rem 0 .7rem}
+  .pill{
+    display:inline-block;padding:6px 12px;border-radius:999px;font-weight:700;font-size:.9rem;
+    margin:4px 6px 0 0;color:#0f172a;background:#dbeafe
+  }
+  .equation{
+    background:#eff6ff;border-left:6px solid var(--blue);padding:14px 16px;border-radius:12px;
+    font-size:1.05rem
+  }
+  .big{
+    font-size:1.25rem;font-weight:700;color:#111827
+  }
+  ul{padding-left:1.2rem}
+  .table-wrap{overflow-x:auto}
+  table{
+    width:100%; border-collapse:collapse; margin-top:10px; background:white; border-radius:12px; overflow:hidden
+  }
+  th,td{padding:10px 12px; border-bottom:1px solid #e5e7eb; text-align:center}
+  th{background:#eff6ff}
+  .note{
+    background:#fefce8;border:1px solid #fde68a;border-radius:14px;padding:14px 16px
+  }
+  .chart-box{
+    background:white;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);
+    padding:18px;margin-top:18px
+  }
+  .legend{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:10px
+  }
+  .legend span{
+    display:inline-flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e5e7eb;
+    border-radius:999px;padding:6px 12px;font-size:.92rem
+  }
+  .dot{width:12px;height:12px;border-radius:50%}
+  .footer{
+    margin-top:24px;font-size:.95rem;color:var(--muted)
+  }
+  .formula{
+    background:#f8fafc;border:1px dashed #cbd5e1;padding:14px;border-radius:12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow-x:auto;
+  }
+  .step{
+    background:#fafafa;border-left:4px solid #8b5cf6;padding:12px 14px;border-radius:10px;margin:10px 0
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Understanding a Simple Mixed-Effects Model</h1>
+  <p>
+    A beginner-friendly example using <strong>speech rate</strong> (fast vs. slow) and
+    <strong>C type</strong> (fortis, aspirated, lenis) to predict the
+    <strong>F0 of the following vowel (V)</strong>, while treating <strong>30 subjects</strong>
+    as a random effect.
+  </p>
+</header>
 
+<div class="container">
+
+  <div class="grid">
+    <section class="card">
+      <h2>1. What are we trying to explain?</h2>
+      <p>
+        In this example, the outcome we want to predict is the <strong>F0 of the vowel</strong>
+        after a consonant. F0 is a measure related to <em>pitch</em>.
+      </p>
+      <div class="pill">Dependent variable: F0 of V</div>
+      <div class="pill">Unit: Hz (illustrative)</div>
+      <p style="margin-top:12px">
+        We want to know whether vowel F0 changes depending on:
+      </p>
+      <ul>
+        <li><strong>Speech rate</strong>: fast vs. slow</li>
+        <li><strong>C type</strong>: fortis, aspirated, lenis</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>2. Fixed effects vs. random effects</h2>
+      <p><strong>Fixed effects</strong> are the factors we want to study directly.</p>
+      <ul>
+        <li><strong>Speech rate</strong> (fast / slow)</li>
+        <li><strong>C type</strong> (fortis / aspirated / lenis)</li>
+      </ul>
+      <p><strong>Random effects</strong> are sources of variation we want to control for, not the main focus.</p>
+      <ul>
+        <li><strong>Subject</strong> (30 people)</li>
+      </ul>
+      <p>
+        Why include subjects as a random effect? Because some people naturally produce higher or lower F0 than others.
+        A mixed-effects model allows each subject to have their own baseline.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>3. Start from basic linear regression</h2>
+      <p>
+        A mixed-effects model is an extension of the familiar regression idea:
+      </p>
+      <div class="equation">
+        <div class="big">y = ax + b</div>
+        <ul>
+          <li><strong>y</strong> = outcome we want to predict (here, F0 of V)</li>
+          <li><strong>x</strong> = predictor (for example, speech rate)</li>
+          <li><strong>a</strong> = slope (how much y changes when x changes)</li>
+          <li><strong>b</strong> = intercept (starting point)</li>
+        </ul>
+      </div>
+      <p>
+        In real speech data, we usually have <em>more than one predictor</em>, and we often need to account for
+        repeated measurements from the same speakers. That is why we use a mixed-effects model.
+      </p>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:18px">
+    <h2>4. The mixed-effects model in this example</h2>
+    <p>Here is a simple model formula:</p>
+    <div class="formula">
+F0_of_V ~ speech_rate + C_type + (1 | subject)
+    </div>
+    <p>
+      This means:
+    </p>
+    <ul>
+      <li><strong>F0_of_V</strong> is predicted by <strong>speech_rate</strong> and <strong>C_type</strong>.</li>
+      <li><strong>(1 | subject)</strong> means each of the 30 subjects can have a different baseline F0.</li>
+    </ul>
+
+    <div class="step">
+      <strong>In plain English:</strong> “We test whether speech rate and consonant type affect vowel F0,
+      while controlling for the fact that the same subjects may have different average pitch levels.”
+    </div>
+  </section>
+
+  <section class="chart-box">
+    <h2>5. Example scatter plot and regression lines</h2>
+    <p>
+      Below is a small <strong>illustrative dataset</strong>. Each dot is one observation.
+      The x-axis shows speech rate coded numerically (<strong>0 = slow</strong>, <strong>1 = fast</strong>),
+      and the y-axis shows vowel F0. Colors show the three C types.
+    </p>
+    <canvas id="scatterChart" height="130"></canvas>
+    <div class="legend">
+      <span><span class="dot" style="background:#3b82f6"></span> Fortis</span>
+      <span><span class="dot" style="background:#10b981"></span> Aspirated</span>
+      <span><span class="dot" style="background:#ec4899"></span> Lenis</span>
+      <span><span class="dot" style="background:#1f2937"></span> Dashed line = simple trend line for each C type</span>
+    </div>
+    <p class="footer">
+      Note: This plot is for teaching purposes. In a real mixed-effects analysis, the model estimates are based on all observations while accounting for subject-level variation.
+    </p>
+  </section>
+
+  <div class="grid" style="margin-top:18px">
+    <section class="card">
+      <h2>6. How to read the plot</h2>
+      <ul>
+        <li>If the dots at <strong>x = 1 (fast)</strong> tend to be higher than the dots at <strong>x = 0 (slow)</strong>, fast speech may be associated with higher F0.</li>
+        <li>If the three colored groups sit at different heights, that suggests an effect of <strong>C type</strong>.</li>
+        <li>The dashed line shows the overall direction of the relationship for each consonant type.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>7. Example interpretation</h2>
+      <p>Suppose the model finds:</p>
+      <ul>
+        <li>a positive effect of <strong>fast speech rate</strong> → vowel F0 is higher in fast speech than in slow speech</li>
+        <li>a difference between <strong>lenis</strong> and <strong>fortis</strong> → vowel F0 differs by consonant type</li>
+      </ul>
+      <p>
+        Then we could say:
+      </p>
+      <div class="note">
+        “Vowel F0 was affected by speech rate and consonant type. In addition, the model controlled for subject-to-subject differences by including subject as a random intercept.”
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:18px">
+    <h2>8. Why not use ordinary regression only?</h2>
+    <p>
+      Ordinary regression assumes all observations are independent. But speech experiments often collect
+      <strong>many observations from the same speakers</strong>. Those observations are not fully independent,
+      because each speaker has their own speaking habits.
+    </p>
+    <p>
+      A mixed-effects model solves this by allowing the model to include:
+    </p>
+    <ul>
+      <li><strong>fixed effects</strong>: the linguistic factors we care about</li>
+      <li><strong>random effects</strong>: speaker-to-speaker variation (and sometimes item-to-item variation too)</li>
+    </ul>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2>9. Take-home message</h2>
+    <ul>
+      <li><strong>Dependent variable</strong>: F0 of the vowel</li>
+      <li><strong>Fixed effects</strong>: speech rate and C type</li>
+      <li><strong>Random effect</strong>: subject (30 speakers)</li>
+      <li><strong>Regression idea</strong>: start from <em>y = ax + b</em>, then extend it to multiple predictors and random effects</li>
+    </ul>
+    <div class="step">
+      <strong>One-sentence summary:</strong> A mixed-effects model is like regression, but smarter for repeated speech data because it can test linguistic effects while also controlling for differences across speakers.
+    </div>
+  </section>
+</div>
+
+<script>
+  // Illustrative teaching data
+  const fortis = [
+    {x:0, y:204}, {x:0, y:208}, {x:0, y:201}, {x:1, y:212}, {x:1, y:216}, {x:1, y:214}
+  ];
+  const aspirated = [
+    {x:0, y:216}, {x:0, y:220}, {x:0, y:218}, {x:1, y:228}, {x:1, y:231}, {x:1, y:229}
+  ];
+  const lenis = [
+    {x:0, y:224}, {x:0, y:227}, {x:0, y:223}, {x:1, y:236}, {x:1, y:239}, {x:1, y:234}
+  ];
+
+  function regressionLine(points){
+    const n = points.length;
+    const sumX = points.reduce((s,p)=>s+p.x,0);
+    const sumY = points.reduce((s,p)=>s+p.y,0);
+    const meanX = sumX/n;
+    const meanY = sumY/n;
+    let num = 0, den = 0;
+    points.forEach(p => {
+      num += (p.x - meanX) * (p.y - meanY);
+      den += (p.x - meanX) ** 2;
+    });
+    const slope = num / den;
+    const intercept = meanY - slope * meanX;
+    return [{x:0, y:intercept}, {x:1, y:slope + intercept}];
+  }
+
+  const fortisLine = regressionLine(fortis);
+  const aspiratedLine = regressionLine(aspirated);
+  const lenisLine = regressionLine(lenis);
+
+  const ctx = document.getElementById('scatterChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Fortis',
+          data: fortis,
+          backgroundColor: '#3b82f6',
+          pointRadius: 5
+        },
+        {
+          label: 'Fortis trend',
+          data: fortisLine,
+          type: 'line',
+          borderColor: '#3b82f6',
+          borderDash: [7,5],
+          borderWidth: 2,
+          pointRadius: 0
+        },
+        {
+          label: 'Aspirated',
+          data: aspirated,
+          backgroundColor: '#10b981',
+          pointRadius: 5
+        },
+        {
+          label: 'Aspirated trend',
+          data: aspiratedLine,
+          type: 'line',
+          borderColor: '#10b981',
+          borderDash: [7,5],
+          borderWidth: 2,
+          pointRadius: 0
+        },
+        {
+          label: 'Lenis',
+          data: lenis,
+          backgroundColor: '#ec4899',
+          pointRadius: 5
+        },
+        {
+          label: 'Lenis trend',
+          data: lenisLine,
+          type: 'line',
+          borderColor: '#ec4899',
+          borderDash: [7,5],
+          borderWidth: 2,
+          pointRadius: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const xLabel = context.raw.x === 0 ? 'Slow' : 'Fast';
+              return ` Speech rate: ${xLabel}, F0: ${context.raw.y} Hz`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: -0.1,
+          max: 1.1,
+          ticks: {
+            stepSize: 1,
+            callback: function(value) {
+              if (value === 0) return 'Slow';
+              if (value === 1) return 'Fast';
+              return '';
+            }
+          },
+          title: {
+            display: true,
+            text: 'Speech rate'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'F0 of V (Hz)'
+          }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
