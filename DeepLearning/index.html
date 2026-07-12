@@ -1,1 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Neural Network: Learning from Error</title>
+    <!-- Tailwind CSS for modern layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom styling to match the scientific cream/blue theme -->
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .main-container {
+            background-color: #F3F0DF; /* Premium Cream */
+            border: 1px solid #e2dcc8;
+        }
+        .text-header {
+            font-family: 'Merriweather', serif;
+            color: #005088;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom animated pulses */
+        @keyframes flowForward {
+            0% { stroke-dashoffset: 24; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes flowBackward {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 24; }
+        }
+        .forward-pulse {
+            stroke-dasharray: 6, 6;
+            animation: flowForward 1s linear infinite;
+        }
+        .backward-pulse {
+            stroke-dasharray: 6, 6;
+            animation: flowBackward 1s linear infinite;
+            stroke: #EF4444; /* Red for Backprop Error */
+        }
+        .node-active {
+            box-shadow: 0 0 15px rgba(17, 202, 160, 0.6);
+            border-color: #11CAA0;
+        }
+        /* Matrix input field styling */
+        .matrix-cell {
+            width: 50px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px;
+            transition: all 0.2s ease;
+        }
+        .matrix-cell:focus {
+            outline: none;
+            border-color: #005088;
+            box-shadow: 0 0 0 2px rgba(0, 80, 136, 0.2);
+        }
+        /* Tooltip style */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 140px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -70px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 11px;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
 
+<div class="max-w-[1500px] mx-auto">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-200 pb-4">
+        <div>
+            <h1 class="text-3xl font-bold text-header">Interactive Deep Learning: The Feedback Loop</h1>
+            <p class="text-slate-600 mt-1">Teaching how input vectors, weights, biases, activations, and the <strong>Loss Function</strong> interact to self-correct.</p>
+        </div>
+        <div class="mt-4 md:mt-0 flex gap-2">
+            <button onclick="resetToDefault()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg shadow transition text-sm font-medium">
+                <i class="fa-solid fa-rotate-left mr-2"></i>Reset Model
+            </button>
+            <a href="#math-explanation" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow transition text-sm font-medium">
+                <i class="fa-solid fa-circle-info mr-2"></i>Math Details
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE BENCH -->
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        
+        <!-- Controls Column -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 flex flex-col gap-6 xl:col-span-1">
+            <div>
+                <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-3">
+                    <i class="fa-solid fa-sliders text-indigo-600 mr-2"></i>1. Set Patient Data
+                </h3>
+                
+                <!-- Inputs x1 and x2 -->
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Input x1: Height (cm)</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="range" id="input-x1" min="150" max="200" value="170" oninput="updateFromSliders()" class="w-full accent-blue-600">
+                            <span id="val-x1" class="font-mono bg-slate-100 px-2 py-1 rounded text-sm w-12 text-center font-bold">170</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Input x2: Weight (kg)</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="range" id="input-x2" min="40" max="120" value="70" oninput="updateFromSliders()" class="w-full accent-blue-600">
+                            <span id="val-x2" class="font-mono bg-slate-100 px-2 py-1 rounded text-sm w-12 text-center font-bold">70</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ground Truth Targets (y1 and y2) -->
+                <div class="flex flex-col gap-3 mt-4 border-t pt-3">
+                    <label class="block text-xs font-bold text-red-600 uppercase tracking-wider">
+                        <i class="fa-solid fa-bullseye mr-1"></i>True Health Targets (Ground Truth)
+                    </label>
+                    <div>
+                        <label class="block text-xs text-slate-500">True Blood Pressure (y1)</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="range" id="target-y1" min="80" max="180" value="120" oninput="updateFromSliders()" class="w-full accent-red-500">
+                            <span id="val-target-y1" class="font-mono bg-slate-100 px-2 py-1 rounded text-sm w-12 text-center font-bold">120</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500">True Triglycerides (y2)</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="range" id="target-y2" min="50" max="300" value="150" oninput="updateFromSliders()" class="w-full accent-red-500">
+                            <span id="val-target-y2" class="font-mono bg-slate-100 px-2 py-1 rounded text-sm w-12 text-center font-bold">150</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Control Station -->
+            <div class="border-t pt-4">
+                <h3 class="text-lg font-bold text-slate-800 mb-3">
+                    <i class="fa-solid fa-graduation-cap text-teal-600 mr-2"></i>2. Play with the Model
+                </h3>
+                <div class="flex flex-col gap-2">
+                    <button onclick="calculateForward()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow font-semibold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-right"></i> Run Forward Pass
+                    </button>
+                    
+                    <button onclick="calculateBackprop()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow font-semibold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Run Backward Pass
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <button onclick="startAutoTrain()" id="btn-train" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-play"></i> Auto Train
+                        </button>
+                        <button onclick="stopAutoTrain()" class="py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-stop"></i> Stop
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <span class="block text-xs font-bold text-slate-500 uppercase">Learning Rate (η)</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <input type="range" id="lr-slider" min="1" max="10" value="5" class="w-full accent-teal-600">
+                        <span id="lr-val" class="font-mono text-xs font-bold">0.00005</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameters Overview -->
+            <div class="border-t pt-4 mt-auto">
+                <div class="flex justify-between items-center text-xs text-slate-500 font-semibold uppercase">
+                    <span>Active Parameters</span>
+                    <span class="font-mono text-indigo-600">17 Total</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2 text-xs">
+                    <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                        <span class="block font-bold">W1 + b1</span>
+                        <span>6 weights, 3 biases</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                        <span class="block font-bold">W2 + b2</span>
+                        <span>6 weights, 2 biases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Diagram Board -->
+        <div class="xl:col-span-3 flex flex-col gap-4">
+            
+            <!-- The Visual Board -->
+            <div class="main-container p-6 rounded-2xl shadow-xl border flex flex-col relative overflow-hidden min-h-[640px] justify-between">
+                
+                <!-- Background Graphic Element -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-radial-gradient from-blue-100 to-transparent opacity-30 rounded-full pointer-events-none"></div>
+
+                <!-- Architecture Grid Header -->
+                <div class="grid grid-cols-5 text-center font-semibold text-xs tracking-wider text-slate-500 uppercase border-b border-slate-300 pb-2 mb-4 z-10">
+                    <div>1. Inputs</div>
+                    <div>2. Weight Matrix 1</div>
+                    <div>3. Hidden Nodes</div>
+                    <div>4. Weight Matrix 2</div>
+                    <div>5. Output & Loss</div>
+                </div>
+
+                <!-- SVG and Interactive Overlay Container -->
+                <div class="relative flex-grow flex items-center justify-between z-10">
+                    
+                    <!-- SVG Pathing Connection Layer -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" id="connections-svg" style="min-height: 450px;">
+                        <!-- Input to Hidden Links -->
+                        <path id="link-x1-h1" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-x1-h2" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-x1-h3" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-x2-h1" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-x2-h2" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-x2-h3" class="stroke-slate-300" stroke-width="2" fill="none" />
+
+                        <!-- Hidden to Output Links -->
+                        <path id="link-h1-y1" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-h1-y2" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-h2-y1" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-h2-y2" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-h3-y1" class="stroke-slate-300" stroke-width="2" fill="none" />
+                        <path id="link-h3-y2" class="stroke-slate-300" stroke-width="2" fill="none" />
+
+                        <!-- Curved Feedback loop back to matrices -->
+                        <path id="backprop-loop" d="" fill="none" stroke="transparent" stroke-width="4" stroke-dasharray="8,8" />
+                    </svg>
+
+                    <!-- Interactive Columns overlay -->
+                    <div class="w-full grid grid-cols-5 gap-4 items-center">
+                        
+                        <!-- Column 1: Input layer -->
+                        <div class="flex flex-col gap-16 items-center justify-center">
+                            <!-- Input 1 Node -->
+                            <div id="node-x1-wrapper" class="flex flex-col items-center">
+                                <div class="w-14 h-14 rounded-full bg-amber-100 border-2 border-amber-500 flex items-center justify-center shadow-md relative z-10 tooltip cursor-default">
+                                    <i class="fa-solid fa-ruler text-amber-600 text-lg"></i>
+                                    <span class="tooltiptext">Input Feature 1: Student Height</span>
+                                </div>
+                                <span class="text-xs font-bold mt-2 text-slate-700">x₁ (Height)</span>
+                                <span id="node-x1-val" class="text-sm font-mono text-slate-900 font-bold bg-white/80 px-2 py-0.5 rounded border border-slate-200 mt-1">170</span>
+                            </div>
+
+                            <!-- Input 2 Node -->
+                            <div id="node-x2-wrapper" class="flex flex-col items-center">
+                                <div class="w-14 h-14 rounded-full bg-amber-100 border-2 border-amber-500 flex items-center justify-center shadow-md relative z-10 tooltip cursor-default">
+                                    <i class="fa-solid fa-weight-scale text-amber-600 text-lg"></i>
+                                    <span class="tooltiptext">Input Feature 2: Student Weight</span>
+                                </div>
+                                <span class="text-xs font-bold mt-2 text-slate-700">x₂ (Weight)</span>
+                                <span id="node-x2-val" class="text-sm font-mono text-slate-900 font-bold bg-white/80 px-2 py-0.5 rounded border border-slate-200 mt-1">70</span>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Weight Matrix 1 UI Grid -->
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="bg-emerald-50 border-2 border-emerald-500 p-3 rounded-xl shadow-lg relative z-10 w-full max-w-[170px]">
+                                <div class="text-center font-bold text-xs text-emerald-800 mb-2 border-b border-emerald-200 pb-1 uppercase">Weight Matrix 1 (W₁)</div>
+                                <div class="grid grid-cols-2 gap-2 justify-center">
+                                    <div class="tooltip"><input type="number" step="0.01" id="w11" class="matrix-cell" value="0.40" onchange="manualParamChange()"><span class="tooltiptext">w₁₁: Height -> h₁</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w12" class="matrix-cell" value="-0.20" onchange="manualParamChange()"><span class="tooltiptext">w₁₂: Weight -> h₁</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w21" class="matrix-cell" value="0.10" onchange="manualParamChange()"><span class="tooltiptext">w₂₁: Height -> h₂</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w22" class="matrix-cell" value="-0.20" onchange="manualParamChange()"><span class="tooltiptext">w₂₂: Weight -> h₂</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w31" class="matrix-cell" value="0.70" onchange="manualParamChange()"><span class="tooltiptext">w₃₁: Height -> h₃</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w32" class="matrix-cell" value="-0.30" onchange="manualParamChange()"><span class="tooltiptext">w₃₂: Weight -> h₃</span></div>
+                                </div>
+                                <div class="text-[10px] text-emerald-700 text-center mt-2 italic font-semibold">Dimensions: 3 × 2</div>
+                                
+                                <!-- Biases b1 -->
+                                <div class="mt-2 border-t border-emerald-200 pt-2">
+                                    <div class="text-[10px] font-bold text-emerald-800 uppercase text-center mb-1">Biases (b₁)</div>
+                                    <div class="flex gap-1 justify-center">
+                                        <input type="number" step="0.01" id="b1_1" class="matrix-cell !w-[42px]" value="0.10" onchange="manualParamChange()">
+                                        <input type="number" step="0.01" id="b1_2" class="matrix-cell !w-[42px]" value="-0.10" onchange="manualParamChange()">
+                                        <input type="number" step="0.01" id="b1_3" class="matrix-cell !w-[42px]" value="0.20" onchange="manualParamChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 3: Hidden Node Circle Elements -->
+                        <div class="flex flex-col gap-10 items-center justify-center">
+                            <!-- Hidden Node 1 -->
+                            <div id="node-h1-wrapper" class="flex flex-col items-center">
+                                <div class="w-12 h-12 rounded-full bg-sky-100 border-2 border-sky-500 flex items-center justify-center shadow-md relative z-10 tooltip cursor-default transition-all duration-300">
+                                    <span class="font-bold text-sm text-sky-800">h₁</span>
+                                    <span class="tooltiptext">Hidden Feature 1 (e.g. Body Mass Indicator)</span>
+                                </div>
+                                <span id="node-h1-val" class="text-xs font-mono text-slate-700 bg-white/80 border border-slate-200 px-1.5 py-0.5 rounded mt-1 font-semibold">0.00</span>
+                            </div>
+
+                            <!-- Hidden Node 2 -->
+                            <div id="node-h2-wrapper" class="flex flex-col items-center">
+                                <div class="w-12 h-12 rounded-full bg-sky-100 border-2 border-sky-500 flex items-center justify-center shadow-md relative z-10 tooltip cursor-default transition-all duration-300">
+                                    <span class="font-bold text-sm text-sky-800">h₂</span>
+                                    <span class="tooltiptext">Hidden Feature 2 (e.g. Height Ratio Offset)</span>
+                                </div>
+                                <span id="node-h2-val" class="text-xs font-mono text-slate-700 bg-white/80 border border-slate-200 px-1.5 py-0.5 rounded mt-1 font-semibold">0.00</span>
+                            </div>
+
+                            <!-- Hidden Node 3 -->
+                            <div id="node-h3-wrapper" class="flex flex-col items-center">
+                                <div class="w-12 h-12 rounded-full bg-sky-100 border-2 border-sky-500 flex items-center justify-center shadow-md relative z-10 tooltip cursor-default transition-all duration-300">
+                                    <span class="font-bold text-sm text-sky-800">h₃</span>
+                                    <span class="tooltiptext">Hidden Feature 3 (e.g. Metabolic Frame index)</span>
+                                </div>
+                                <span id="node-h3-val" class="text-xs font-mono text-slate-700 bg-white/80 border border-slate-200 px-1.5 py-0.5 rounded mt-1 font-semibold">0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Column 4: Weight Matrix 2 UI Grid -->
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="bg-indigo-50 border-2 border-indigo-500 p-3 rounded-xl shadow-lg relative z-10 w-full max-w-[185px]">
+                                <div class="text-center font-bold text-xs text-indigo-800 mb-2 border-b border-indigo-200 pb-1 uppercase">Weight Matrix 2 (W₂)</div>
+                                <div class="grid grid-cols-3 gap-1.5 justify-center">
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_11" class="matrix-cell !w-[45px]" value="0.50" onchange="manualParamChange()"><span class="tooltiptext">w'₁₁: h₁ -> Output 1</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_12" class="matrix-cell !w-[45px]" value="0.20" onchange="manualParamChange()"><span class="tooltiptext">w'₁₂: h₂ -> Output 1</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_13" class="matrix-cell !w-[45px]" value="-0.40" onchange="manualParamChange()"><span class="tooltiptext">w'₁₃: h₃ -> Output 1</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_21" class="matrix-cell !w-[45px]" value="-0.30" onchange="manualParamChange()"><span class="tooltiptext">w'₂₁: h₁ -> Output 2</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_22" class="matrix-cell !w-[45px]" value="0.60" onchange="manualParamChange()"><span class="tooltiptext">w'₂₂: h₂ -> Output 2</span></div>
+                                    <div class="tooltip"><input type="number" step="0.01" id="w2_23" class="matrix-cell !w-[45px]" value="0.10" onchange="manualParamChange()"><span class="tooltiptext">w'₂₃: h₃ -> Output 2</span></div>
+                                </div>
+                                <div class="text-[10px] text-indigo-700 text-center mt-2 italic font-semibold">Dimensions: 2 × 3</div>
+
+                                <!-- Biases b2 -->
+                                <div class="mt-2 border-t border-indigo-200 pt-2">
+                                    <div class="text-[10px] font-bold text-indigo-800 uppercase text-center mb-1">Biases (b₂)</div>
+                                    <div class="flex gap-1 justify-center">
+                                        <input type="number" step="0.01" id="b2_1" class="matrix-cell !w-[55px]" value="0.30" onchange="manualParamChange()">
+                                        <input type="number" step="0.01" id="b2_2" class="matrix-cell !w-[55px]" value="-0.20" onchange="manualParamChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 5: Predictions, True Targets & Loss Calculation Block -->
+                        <div class="flex flex-col gap-10 items-center justify-center">
+                            
+                            <!-- Prediction y_hat_1 (Blood pressure) -->
+                            <div id="node-y1-wrapper" class="flex flex-col items-center bg-white p-3 rounded-xl border border-slate-200 shadow relative z-10 w-full">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 border-2 border-orange-500 flex items-center justify-center">
+                                        <i class="fa-solid fa-heart-pulse text-orange-600 text-xs"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Predicted ŷ₁</span>
+                                        <span class="text-[11px] font-semibold text-slate-700">BP (mmHg)</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center w-full mt-2 border-t pt-1.5 text-xs font-mono">
+                                    <span class="text-slate-400">ŷ₁:</span>
+                                    <span id="node-y1-val" class="font-bold text-orange-600">0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center w-full mt-1 text-xs font-mono">
+                                    <span class="text-slate-400">True:</span>
+                                    <span id="label-y1-true" class="font-bold text-slate-700">120</span>
+                                </div>
+                            </div>
+
+                            <!-- Prediction y_hat_2 (Triglycerides) -->
+                            <div id="node-y2-wrapper" class="flex flex-col items-center bg-white p-3 rounded-xl border border-slate-200 shadow relative z-10 w-full">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 border-2 border-orange-500 flex items-center justify-center">
+                                        <i class="fa-solid fa-flask text-orange-600 text-xs"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <span class="block text-[10px] font-bold text-slate-500 uppercase">Predicted ŷ₂</span>
+                                        <span class="text-[11px] font-semibold text-slate-700">Lipids (mg/dL)</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center w-full mt-2 border-t pt-1.5 text-xs font-mono">
+                                    <span class="text-slate-400">ŷ₂:</span>
+                                    <span id="node-y2-val" class="font-bold text-orange-600">0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center w-full mt-1 text-xs font-mono">
+                                    <span class="text-slate-400">True:</span>
+                                    <span id="label-y2-true" class="font-bold text-slate-700">150</span>
+                                </div>
+                            </div>
+
+                            <!-- The Loss calculation Card (The Core addition) -->
+                            <div id="loss-card" class="bg-red-50 border-2 border-red-500 p-3 rounded-xl shadow-md w-full relative z-10">
+                                <div class="text-center font-bold text-xs text-red-800 uppercase border-b border-red-200 pb-1 mb-2">
+                                    <i class="fa-solid fa-calculator mr-1"></i>Loss Function
+                                </div>
+                                <div class="text-center">
+                                    <span class="block text-[10px] font-bold text-slate-500 uppercase">MSE (Mean Squared Error)</span>
+                                    <span id="loss-val" class="font-mono text-lg font-bold text-red-600">0.00</span>
+                                </div>
+                                <div class="text-[9px] text-slate-500 text-center mt-1">L = ½ ∑ (yᵢ - ŷᵢ)²</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Equation panel Footer -->
+                <div class="grid grid-cols-2 gap-4 border-t border-slate-300 pt-3 mt-4 text-xs bg-white/40 p-3 rounded-xl">
+                    <div>
+                        <span class="font-bold block text-slate-800">Forward Formula:</span>
+                        <code class="text-indigo-900 font-mono text-[11px]">z = W₁x + b₁ ➔ h = max(0, z) ➔ ŷ = W₂h + b₂</code>
+                    </div>
+                    <div>
+                        <span class="font-bold block text-slate-800">Backward Feedback Update:</span>
+                        <code class="text-rose-900 font-mono text-[11px]">W₂ ← W₂ - η × (Error) × hᵀ</code>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Mathematical Explanation Section -->
+            <div id="math-explanation" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-xl font-bold text-header border-b pb-2 mb-4">How this connects to Matrix Operations &amp; Loss</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-700">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2"><i class="fa-solid fa-circle text-amber-500 mr-2 text-xs"></i>Step 1: The Input Matrix x</h4>
+                        <p>Our input layer gathers height and weight. We pack this physical data into a vector:</p>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 font-mono text-xs my-2 text-center">
+                            x = [170, 70]ᵀ
+                        </div>
+                        <p>This inputs into a 2-node column vector, feeding forward into our calculations.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2"><i class="fa-solid fa-circle text-sky-500 mr-2 text-xs"></i>Step 2: Hidden Transformations</h4>
+                        <p>We transform inputs into abstract combinations using a matrix multiplication + shift (Bias) and filter out negative values using the <strong>ReLU Activation Function</strong>:</p>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 font-mono text-xs my-2 text-center">
+                            h = max(0, W₁x + b₁)
+                        </div>
+                        <p>These hidden nodes extract high-level health patterns that raw height and weight can't express directly.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2"><i class="fa-solid fa-circle text-red-500 mr-2 text-xs"></i>Step 3: Calculating and Using Loss</h4>
+                        <p>The output layer predicts Blood Pressure and Triglycerides ($\hat{y}$). We then calculate error against True Values ($y$):</p>
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 font-mono text-xs my-2 text-center">
+                            Loss = ½ [(y₁ - ŷ₁)² + (y₂ - ŷ₂)²]
+                        </div>
+                        <p class="mt-1">In deep learning, <strong>learning</strong> is mathematically pushing this Loss value towards zero. We do this by passing the error signal backwards (feedback) and slightly adjusting all 17 parameters.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+// State Management
+let x1 = 170;
+let x2 = 70;
+let y1_target = 120;
+let y2_target = 150;
+
+// Model Weights and Biases initialized based on the user's diagram parameters
+let w1 = [
+    [0.40, -0.20],  // h1 connections
+    [0.10, -0.20],  // h2 connections
+    [0.70, -0.30]   // h3 connections
+];
+let b1 = [0.10, -0.10, 0.20]; // Hidden Layer Biases
+
+let w2 = [
+    [0.50, 0.20, -0.40], // Output 1 (y1) connections
+    [-0.30, 0.60, 0.10]  // Output 2 (y2) connections
+];
+let b2 = [0.30, -0.20]; // Output Layer Biases
+
+// Hidden & Output Values
+let h = [0, 0, 0];
+let y_pred = [0, 0];
+let loss = 0;
+
+let trainingInterval = null;
+
+// On Window Load - Draw SVG lines and compute values
+window.onload = function() {
+    updateFromSliders();
+    drawStaticLinks();
+    
+    // Recalculate layout on window resize to keep lines centered
+    window.addEventListener('resize', drawStaticLinks);
+};
+
+// Map Input Elements to JS State
+function updateFromSliders() {
+    x1 = parseFloat(document.getElementById('input-x1').value);
+    x2 = parseFloat(document.getElementById('input-x2').value);
+    y1_target = parseFloat(document.getElementById('target-y1').value);
+    y2_target = parseFloat(document.getElementById('target-y2').value);
+
+    // Update labels UI
+    document.getElementById('val-x1').textContent = x1;
+    document.getElementById('val-x2').textContent = x2;
+    document.getElementById('val-target-y1').textContent = y1_target;
+    document.getElementById('val-target-y2').textContent = y2_target;
+
+    document.getElementById('node-x1-val').textContent = x1.toFixed(0);
+    document.getElementById('node-x2-val').textContent = x2.toFixed(0);
+    document.getElementById('label-y1-true').textContent = y1_target.toFixed(0);
+    document.getElementById('label-y2-true').textContent = y2_target.toFixed(0);
+
+    // Compute live values automatically
+    calculateForward();
+}
+
+// Read Custom Matrix Values from Inputs
+function readMatrixInputs() {
+    // Read Matrix 1
+    w1[0][0] = parseFloat(document.getElementById('w11').value) || 0;
+    w1[0][1] = parseFloat(document.getElementById('w12').value) || 0;
+    w1[1][0] = parseFloat(document.getElementById('w21').value) || 0;
+    w1[1][1] = parseFloat(document.getElementById('w22').value) || 0;
+    w1[2][0] = parseFloat(document.getElementById('w31').value) || 0;
+    w1[2][1] = parseFloat(document.getElementById('w32').value) || 0;
+
+    b1[0] = parseFloat(document.getElementById('b1_1').value) || 0;
+    b1[1] = parseFloat(document.getElementById('b1_2').value) || 0;
+    b1[2] = parseFloat(document.getElementById('b1_3').value) || 0;
+
+    // Read Matrix 2
+    w2[0][0] = parseFloat(document.getElementById('w2_11').value) || 0;
+    w2[0][1] = parseFloat(document.getElementById('w2_12').value) || 0;
+    w2[0][2] = parseFloat(document.getElementById('w2_13').value) || 0;
+    w2[1][0] = parseFloat(document.getElementById('w2_21').value) || 0;
+    w2[1][1] = parseFloat(document.getElementById('w2_22').value) || 0;
+    w2[1][2] = parseFloat(document.getElementById('w2_23').value) || 0;
+
+    b2[0] = parseFloat(document.getElementById('b2_1').value) || 0;
+    b2[1] = parseFloat(document.getElementById('b2_2').value) || 0;
+}
+
+// Push JS Parameters to Matrix Inputs Form
+function writeParamsToInputs() {
+    document.getElementById('w11').value = w1[0][0].toFixed(2);
+    document.getElementById('w12').value = w1[0][1].toFixed(2);
+    document.getElementById('w21').value = w1[1][0].toFixed(2);
+    document.getElementById('w22').value = w1[1][1].toFixed(2);
+    document.getElementById('w31').value = w1[2][0].toFixed(2);
+    document.getElementById('w32').value = w1[2][1].toFixed(2);
+
+    document.getElementById('b1_1').value = b1[0].toFixed(2);
+    document.getElementById('b1_2').value = b1[1].toFixed(2);
+    document.getElementById('b1_3').value = b1[2].toFixed(2);
+
+    document.getElementById('w2_11').value = w2[0][0].toFixed(2);
+    document.getElementById('w2_12').value = w2[0][1].toFixed(2);
+    document.getElementById('w2_13').value = w2[0][2].toFixed(2);
+    document.getElementById('w2_21').value = w2[1][0].toFixed(2);
+    document.getElementById('w2_22').value = w2[1][1].toFixed(2);
+    document.getElementById('w2_23').value = w2[1][2].toFixed(2);
+
+    document.getElementById('b2_1').value = b2[0].toFixed(2);
+    document.getElementById('b2_2').value = b2[1].toFixed(2);
+}
+
+// Triggers forward calculation on manual weight inputs
+function manualParamChange() {
+    readMatrixInputs();
+    calculateForward();
+}
+
+// FORWARD PROPAGATION LOOP
+function calculateForward() {
+    readMatrixInputs();
+
+    // 1. Inputs Normalized/Scaled (Internal scaling helps maintain computational sanity on simple inputs)
+    let nx1 = x1 / 100; // Scaled inputs for smoother visual predictions
+    let nx2 = x2 / 100;
+
+    // 2. Compute Hidden Layer: h = max(0, W1 * x + b1) (ReLU Activation)
+    for (let i = 0; i < 3; i++) {
+        let z = (w1[i][0] * nx1) + (w1[i][1] * nx2) + b1[i];
+        h[i] = Math.max(0, z); // ReLU activation function
+    }
+
+    // 3. Compute Outputs: y_pred = W2 * h + b2 (Linear Activation for Regression task)
+    y_pred[0] = (w2[0][0] * h[0]) + (w2[0][1] * h[1]) + (w2[0][2] * h[2]) + b2[0];
+    y_pred[1] = (w2[1][0] * h[0]) + (w2[1][1] * h[1]) + (w2[1][2] * h[2]) + b2[1];
+
+    // Rescale output values to fit expected target medical ranges (mmHg and mg/dL)
+    let scale_y1 = y_pred[0] * 100;
+    let scale_y2 = y_pred[1] * 100;
+
+    // Update Nodes values UI
+    document.getElementById('node-h1-val').textContent = h[0].toFixed(2);
+    document.getElementById('node-h2-val').textContent = h[1].toFixed(2);
+    document.getElementById('node-h3-val').textContent = h[2].toFixed(2);
+
+    document.getElementById('node-y1-val').textContent = scale_y1.toFixed(1);
+    document.getElementById('node-y2-val').textContent = scale_y2.toFixed(1);
+
+    // 4. Calculate Loss: MSE = 0.5 * [(y1 - y1_pred)^2 + (y2 - y2_pred)^2]
+    let diff_1 = y1_target - scale_y1;
+    let diff_2 = y2_target - scale_y2;
+    loss = 0.5 * (Math.pow(diff_1, 2) + Math.pow(diff_2, 2));
+
+    document.getElementById('loss-val').textContent = loss.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+
+    // Trigger visual Forward Pulse animation
+    triggerFlowAnimation(false);
+}
+
+// BACKWARD PROPAGATION LOOP (Manual Update iteration step)
+function calculateBackprop() {
+    // Trigger Backward Error flow styling
+    triggerFlowAnimation(true);
+
+    let nx1 = x1 / 100;
+    let nx2 = x2 / 100;
+
+    // Fetch dynamic learning rate from UI
+    let lrExponent = parseFloat(document.getElementById('lr-slider').value);
+    let lr = lrExponent * 0.00001;
+    document.getElementById('lr-val').textContent = lr.toFixed(5);
+
+    // 1. Output error calculation
+    let scale_y1 = y_pred[0] * 100;
+    let scale_y2 = y_pred[1] * 100;
+
+    // Error = Predicted - True
+    let err1 = (scale_y1 - y1_target) * 100; // Account for outputs scaling factor
+    let err2 = (scale_y2 - y2_target) * 100;
+
+    // 2. Adjust output biases (b2)
+    b2[0] -= lr * err1;
+    b2[1] -= lr * err2;
+
+    // 3. Adjust Weight Matrix 2 (w2)
+    let prev_w2 = JSON.parse(JSON.stringify(w2)); // Save values to compute backprop to W1
+    for (let o = 0; o < 2; o++) {
+        let err = (o === 0) ? err1 : err2;
+        for (let i = 0; i < 3; i++) {
+            w2[o][i] -= lr * err * h[i];
+        }
+    }
+
+    // 4. Propagate Error Backwards into Hidden Layer nodes
+    let h_err = [0, 0, 0];
+    for (let i = 0; i < 3; i++) {
+        // Accumulate error contribution from both outputs
+        let accumulated_err = (err1 * prev_w2[0][i]) + (err2 * prev_w2[1][i]);
+        // Apply ReLU derivative: 1 if node was active (h[i] > 0), else 0
+        h_err[i] = h[i] > 0 ? accumulated_err : 0;
+    }
+
+    // 5. Adjust Weight Matrix 1 (w1) and Biases (b1)
+    for (let i = 0; i < 3; i++) {
+        b1[i] -= lr * h_err[i];
+        w1[i][0] -= lr * h_err[i] * nx1;
+        w1[i][1] -= lr * h_err[i] * nx2;
+    }
+
+    // Limit decimal sanity to avoid floating issues
+    limitWeightsDecimals();
+
+    // Recompute predictions based on modified weights
+    writeParamsToInputs();
+    calculateForward();
+}
+
+// Keep parameter variables normalized to 3 decimal points maximum for readability
+function limitWeightsDecimals() {
+    for (let i = 0; i < 3; i++) {
+        w1[i][0] = Math.max(-10, Math.min(10, w1[i][0]));
+        w1[i][1] = Math.max(-10, Math.min(10, w1[i][1]));
+        b1[i] = Math.max(-10, Math.min(10, b1[i]));
+    }
+    for (let o = 0; o < 2; o++) {
+        for (let i = 0; i < 3; i++) {
+            w2[o][i] = Math.max(-10, Math.min(10, w2[o][i]));
+        }
+        b2[o] = Math.max(-10, Math.min(10, b2[o]));
+    }
+}
+
+// Reset Model weights to diagram defaults
+function resetToDefault() {
+    stopAutoTrain();
+    w1 = [ [0.40, -0.20], [0.10, -0.20], [0.70, -0.30] ];
+    b1 = [0.10, -0.10, 0.20];
+    w2 = [ [0.50, 0.20, -0.40], [-0.30, 0.60, 0.10] ];
+    b2 = [0.30, -0.20];
+
+    writeParamsToInputs();
+    calculateForward();
+}
+
+// AUTO TRAINING SIMULATOR
+function startAutoTrain() {
+    if (trainingInterval) return;
+    
+    document.getElementById('btn-train').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Training...';
+    document.getElementById('btn-train').classList.replace('bg-emerald-600', 'bg-emerald-800');
+    
+    trainingInterval = setInterval(() => {
+        calculateBackprop();
+        // Stop training if loss becomes very low
+        if (loss < 0.1) {
+            stopAutoTrain();
+        }
+    }, 100);
+}
+
+function stopAutoTrain() {
+    if (trainingInterval) {
+        clearInterval(trainingInterval);
+        trainingInterval = null;
+    }
+    document.getElementById('btn-train').innerHTML = '<i class="fa-solid fa-play"></i> Auto Train';
+    document.getElementById('btn-train').classList.replace('bg-emerald-800', 'bg-emerald-600');
+}
+
+// Generate Static Connection Lines matching the physical nodes coordinates
+function drawStaticLinks() {
+    const x1Node = document.getElementById('node-x1-wrapper');
+    const x2Node = document.getElementById('node-x2-wrapper');
+    const h1Node = document.getElementById('node-h1-wrapper');
+    const h2Node = document.getElementById('node-h2-wrapper');
+    const h3Node = document.getElementById('node-h3-wrapper');
+    const y1Node = document.getElementById('node-y1-wrapper');
+    const y2Node = document.getElementById('node-y2-wrapper');
+    const lossCard = document.getElementById('loss-card');
+    const svg = document.getElementById('connections-svg');
+
+    // Get SVG container offset coordinates
+    const svgRect = svg.getBoundingClientRect();
+
+    function getCenter(el) {
+        const rect = el.getBoundingClientRect();
+        return {
+            x: rect.left - svgRect.left + rect.width / 2,
+            y: rect.top - svgRect.top + rect.height / 2
+        };
+    }
+
+    const pX1 = getCenter(x1Node);
+    const pX2 = getCenter(x2Node);
+    const pH1 = getCenter(h1Node);
+    const pH2 = getCenter(h2Node);
+    const pH3 = getCenter(h3Node);
+    const pY1 = getCenter(y1Node);
+    const pY2 = getCenter(y2Node);
+    const pLoss = getCenter(lossCard);
+
+    // Assign SVG paths positions dynamically
+    setPath('link-x1-h1', pX1, pH1);
+    setPath('link-x1-h2', pX1, pH2);
+    setPath('link-x1-h3', pX1, pH3);
+    setPath('link-x2-h1', pX2, pH1);
+    setPath('link-x2-h2', pX2, pH2);
+    setPath('link-x2-h3', pX2, pH3);
+
+    setPath('link-h1-y1', pH1, pY1);
+    setPath('link-h1-y2', pH1, pY2);
+    setPath('link-h2-y1', pH2, pY1);
+    setPath('link-h2-y2', pH2, pY2);
+    setPath('link-h3-y1', pH3, pY1);
+    setPath('link-h3-y2', pH3, pY2);
+
+    // Backprop curve path mapping
+    const backpropPath = document.getElementById('backprop-loop');
+    // Draws a beautiful curved path leading from the Loss Card back underneath to Input 1 wrapper
+    const controlX = (pLoss.x + pX1.x) / 2;
+    const controlY = pLoss.y + 160;
+    backpropPath.setAttribute('d', `M ${pLoss.x} ${pLoss.y} Q ${controlX} ${controlY} ${pX1.x} ${pX1.y + 20}`);
+}
+
+function setPath(id, from, to) {
+    const path = document.getElementById(id);
+    path.setAttribute('d', `M ${from.x} ${from.y} L ${to.x} ${to.y}`);
+}
+
+// Activates flowing glowing effects across links for forward vs backward pass
+function triggerFlowAnimation(isBackward) {
+    const paths = document.querySelectorAll('#connections-svg path:not(#backprop-loop)');
+    const bpPath = document.getElementById('backprop-loop');
+
+    if (isBackward) {
+        // Pulsate Backward loop in red, signaling Gradient feedback flow
+        bpPath.setAttribute('stroke', '#EF4444');
+        bpPath.classList.add('backward-pulse');
+        
+        paths.forEach(p => {
+            p.setAttribute('stroke', '#CBD5E1');
+            p.classList.remove('forward-pulse');
+        });
+
+        // Turn off loop animation after feedback pulses
+        setTimeout(() => {
+            bpPath.classList.remove('backward-pulse');
+            bpPath.setAttribute('stroke', 'transparent');
+        }, 1200);
+    } else {
+        // Pulsate Forward links in teal/sky blue showing inference progress
+        bpPath.setAttribute('stroke', 'transparent');
+        bpPath.classList.remove('backward-pulse');
+
+        paths.forEach(p => {
+            p.setAttribute('stroke', '#11CAA0');
+            p.classList.add('forward-pulse');
+        });
+
+        // Let pulses fade back to static paths
+        setTimeout(() => {
+            paths.forEach(p => {
+                p.classList.remove('forward-pulse');
+                p.setAttribute('stroke', '#CBD5E1');
+            });
+        }, 1000);
+    }
+}
+</script>
+</body>
+</html>
