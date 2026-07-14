@@ -369,4 +369,101 @@
 
             function getCenter(id) {
                 const el = document.getElementById(id);
-                if (!
+                if (!el) return {x: 0, y: 0};
+                const r = el.getBoundingClientRect();
+                return {
+                    x: r.left - containerRect.left + r.width / 2,
+                    y: r.top - containerRect.top + r.height / 2
+                };
+            }
+
+            // 1. Bias 1 (node-b1) connects to all hidden nodes
+            const b1Center = getCenter('node-b1');
+            hiddens.forEach(hidId => {
+                const end = getCenter(hidId);
+                createLine(svg, b1Center, end, 'node-b1', hidId, '#ec4899', '1.5'); // Pink for bias connection
+            });
+
+            // 2. Inputs connect to all hidden nodes
+            inputs.forEach(inpId => {
+                const start = getCenter(inpId);
+                hiddens.forEach(hidId => {
+                    const end = getCenter(hidId);
+                    createLine(svg, start, end, inpId, hidId, '#94a3b8', '2');
+                });
+            });
+
+            // 3. Bias 2 (node-b2) connects to all output nodes
+            const b2Center = getCenter('node-b2');
+            outputs.forEach(outId => {
+                const end = getCenter(outId);
+                createLine(svg, b2Center, end, 'node-b2', outId, '#ec4899', '1.5'); // Pink for bias connection
+            });
+
+            // 4. Hidden nodes connect to all output nodes
+            hiddens.forEach(hidId => {
+                const start = getCenter(hidId);
+                outputs.forEach(outId => {
+                    const end = getCenter(outId);
+                    createLine(svg, start, end, hidId, outId, '#cbd5e1', '2');
+                });
+            });
+        }
+
+        function createLine(svg, start, end, class1, class2, color, strokeWidth) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', start.x);
+            line.setAttribute('y1', start.y);
+            line.setAttribute('x2', end.x);
+            line.setAttribute('y2', end.y);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', strokeWidth);
+            line.setAttribute('class', `conn ${class1} ${class2}`);
+            line.style.transition = 'stroke 0.2s, stroke-width 0.2s, stroke-dasharray 0.2s';
+            svg.appendChild(line);
+        }
+
+        // Setup interaction hover highlighting
+        function setupInteraction() {
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach(node => {
+                node.addEventListener('mouseenter', () => {
+                    const id = node.id;
+                    const lines = document.querySelectorAll('.conn');
+                    lines.forEach(line => {
+                        if (line.classList.contains(id)) {
+                            line.setAttribute('stroke', '#3b82f6');
+                            line.setAttribute('stroke-width', '3.5');
+                        } else {
+                            line.setAttribute('stroke-opacity', '0.15');
+                        }
+                    });
+                });
+
+                node.addEventListener('mouseleave', () => {
+                    const lines = document.querySelectorAll('.conn');
+                    lines.forEach(line => {
+                        line.setAttribute('stroke-opacity', '1');
+                        line.setAttribute('stroke-width', line.classList.contains('node-b1') || line.classList.contains('node-b2') ? '1.5' : '2');
+                        
+                        // Restore original colors
+                        if (line.classList.contains('node-b1') || line.classList.contains('node-b2')) {
+                            line.setAttribute('stroke', '#ec4899');
+                        } else if (line.classList.contains('node-x1') || line.classList.contains('node-x2')) {
+                            line.setAttribute('stroke', '#94a3b8');
+                        } else {
+                            line.setAttribute('stroke', '#cbd5e1');
+                        }
+                    });
+                });
+            });
+        }
+
+        window.addEventListener('resize', drawConnections);
+        setTimeout(() => {
+            drawConnections();
+            setupInteraction();
+        }, 150);
+    </script>
+</body>
+</html>
