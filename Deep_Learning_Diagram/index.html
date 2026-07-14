@@ -3,35 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Deep Learning Architecture</title>
+    <title>Deep Learning Feedforward Propagation</title>
     <style>
         :root {
             --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            
-            --layer-input: #fef08a;
-            --border-input: #eab308;
-            --layer-hidden: #bfdbfe;
-            --border-hidden: #3b82f6;
-            --layer-output: #fed7aa;
-            --border-output: #f97316;
-            
-            --matrix-green: #d1fae5;
-            --matrix-border-green: #10b981;
-            --matrix-blue: #dbeafe;
-            --matrix-border-blue: #3b82f6;
-            
+            --text-color: #1e293b;
+            --input-color: #fef08a;
+            --input-border: #eab308;
+            --hidden-color: #bfdbfe;
+            --hidden-border: #3b82f6;
+            --output-color: #fed7aa;
+            --output-border: #f97316;
             --bias-color: #fce7f3;
             --bias-border: #ec4899;
+            --math-bg: #ffffff;
+            --math-border: #cbd5e1;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
             display: flex;
@@ -39,77 +31,61 @@
             align-items: center;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            max-width: 900px;
-        }
-
         h1 {
-            font-size: 2.2rem;
-            margin: 0 0 10px 0;
-            color: var(--text-main);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: #0f172a;
+            text-align: center;
         }
 
-        .subtitle {
-            font-size: 1.05rem;
-            color: var(--text-muted);
-            margin: 0;
-            line-height: 1.5;
+        p.subtitle {
+            margin: 0 0 25px 0;
+            color: #64748b;
+            font-size: 1rem;
+            text-align: center;
+            max-width: 800px;
         }
 
-        /* Top dimensions row */
-        .summary-bar {
+        .container {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 30px;
             width: 100%;
             max-width: 1200px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 950px) {
+            .container {
+                flex-direction: row;
+                align-items: stretch;
+            }
+        }
+
+        /* Interactive Diagram Container */
+        .diagram-card {
+            background: white;
             border-radius: 12px;
-            padding: 15px 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            box-sizing: border-box;
-        }
-
-        .summary-item {
-            text-align: center;
-            flex: 1;
-        }
-        .summary-item h3 {
-            margin: 0 0 5px 0;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-        }
-        .summary-item p {
-            margin: 0;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        /* Workspace Grid */
-        .workspace {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            flex: 1.4;
             display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
-            width: 100%;
-            max-width: 1280px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            padding: 40px 20px;
-            min-height: 550px;
+        }
+
+        .network-wrapper {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            overflow: visible;
-            box-sizing: border-box;
+            width: 100%;
+            position: relative;
+            padding: 20px 10px;
+            min-height: 450px;
         }
 
-        /* SVG Connection canvas overlay */
-        svg.connections-layer {
+        /* SVG Overlay for Connections */
+        svg.connections {
             position: absolute;
             top: 0;
             left: 0;
@@ -119,25 +95,29 @@
             pointer-events: none;
         }
 
-        /* Column configuration */
-        .column {
+        .layer {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            justify-content: center;
+            height: 100%;
             z-index: 2;
-            position: relative;
+            gap: 25px;
         }
 
-        .col-inputs { width: 12%; }
-        .col-matrix1 { width: 18%; }
-        .col-hidden { width: 12%; }
-        .col-matrix2 { width: 22%; }
-        .col-outputs { width: 15%; }
+        .layer-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #475569;
+        }
 
-        /* Node generic styling */
-        .circle-node {
-            width: 80px;
-            height: 80px;
+        /* Node Styling */
+        .node {
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -145,156 +125,248 @@
             align-items: center;
             text-align: center;
             font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            font-size: 0.85rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
             border: 3px solid transparent;
-            margin: 25px 0;
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: white;
-            cursor: pointer;
+            cursor: default;
+            position: relative;
         }
-        .circle-node:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+
+        .node:hover {
+            transform: scale(1.08);
         }
 
         .node-sub {
             font-size: 0.7rem;
             font-weight: normal;
-            color: #475569;
-            margin-top: 3px;
+            opacity: 0.8;
+            margin-top: 2px;
         }
 
-        /* Specific node color codes */
-        .node-in { background-color: var(--layer-input); border-color: var(--border-input); }
-        .node-hid { background-color: var(--layer-hidden); border-color: var(--border-hidden); width: 90px; height: 90px; }
-        .node-out { background-color: var(--layer-output); border-color: var(--border-output); }
+        .input-node {
+            background-color: var(--input-color);
+            border-color: var(--input-border);
+        }
 
-        /* Matrix visual grids */
-        .matrix-box {
-            background: #fafafa;
-            border-radius: 10px;
-            padding: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        /* Hidden Layer Node Detail (Bias + Activation) */
+        .hidden-node {
+            background-color: var(--hidden-color);
+            border-color: var(--hidden-border);
+            width: 85px;
+            height: 85px;
+        }
+
+        .hidden-node .node-math {
+            font-size: 0.65rem;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-top: 3px;
+            font-family: monospace;
+            font-weight: normal;
+        }
+
+        .output-node {
+            background-color: var(--output-color);
+            border-color: var(--output-border);
+        }
+
+        /* Bias Node (Small physical input for +1 bias) */
+        .bias-node {
+            background-color: var(--bias-color);
+            border-color: var(--bias-border);
+            width: 50px;
+            height: 50px;
+            font-size: 0.8rem;
+        }
+
+        /* Equations / Explanations Column */
+        .math-card {
+            background: var(--math-bg);
+            border-radius: 12px;
+            border: 1px solid var(--math-border);
+            padding: 25px;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-            width: 100%;
-        }
-        .matrix-box.m1 { border: 2px solid var(--matrix-border-green); background-color: #f0fdf4; }
-        .matrix-box.m2 { border: 2px solid var(--matrix-border-blue); background-color: #eff6ff; }
-
-        .matrix-title {
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #334155;
-            text-align: center;
+            justify-content: space-between;
         }
 
-        .matrix-table {
-            border-collapse: collapse;
-            font-family: monospace;
-            font-size: 0.8rem;
-            background: white;
-        }
-        .matrix-table td {
-            border: 1px solid #cbd5e1;
-            padding: 6px 8px;
-            text-align: center;
-            width: 45px;
+        .math-section {
+            margin-bottom: 20px;
         }
 
-        /* Bias Node representation */
-        .bias-indicator {
-            font-size: 0.65rem;
-            background: var(--bias-color);
-            color: #9d174d;
-            border: 1px solid var(--bias-border);
-            border-radius: 4px;
-            padding: 1px 4px;
-            margin-top: 4px;
-            font-family: monospace;
+        .math-section h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
+            border-bottom: 2px solid var(--math-border);
+            padding-bottom: 8px;
         }
 
-        /* Math formula output panel */
-        .math-debugger {
-            width: 100%;
-            max-width: 1200px;
-            background: #1e293b;
-            color: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            font-family: 'Courier New', Courier, monospace;
-            box-sizing: border-box;
-        }
-        .math-debugger h4 {
-            margin: 0 0 10px 0;
-            color: #38bdf8;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-        }
-        .math-flow {
+        .formula {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: "Cambria Math", "Times New Roman", Times, serif;
+            font-style: italic;
             font-size: 1.05rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            line-height: 1.4;
+        }
+
+        .formula-desc {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            background-color: #e2e8f0;
+            color: #334155;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
+        .badge.bias {
+            background-color: #fce7f3;
+            color: #9d174d;
+        }
+
+        .badge.activation {
+            background-color: #dbeafe;
+            color: #1e40af;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Interactive Neural Network Architecture</h1>
-        <p class="subtitle">Complete feedforward diagram mapping input variables directly through Weight Matrices, individual Node Biases, Activation Functions (ReLU), and Outputs.</p>
-    </header>
+    <h1>Deep Learning Feedforward Architecture</h1>
+    <p class="subtitle">An accurate representation illustrating the flow of <b>Matrix Multiplication</b>, adding <b>Biases (b)</b>, and applying the <b>ReLU Activation Function</b>.</p>
 
-    <div class="summary-bar">
-        <div class="summary-item">
-            <h3>Input Feature Space</h3>
-            <p style="color: #b45309;">2 Dimensions (Height, Weight)</p>
+    <div class="container">
+        <div class="diagram-card">
+            <div style="width: 100%; display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div style="text-align: center; flex: 1;"><div class="layer-title">Input Layer</div><div class="badge">2 Features + Bias</div></div>
+                <div style="text-align: center; flex: 1.2;"><div class="layer-title">Hidden Layer</div><div class="badge">3 Neurons + Bias</div></div>
+                <div style="text-align: center; flex: 1;"><div class="layer-title">Output Layer</div><div class="badge">2 Predictions</div></div>
+            </div>
+
+            <div class="network-wrapper" id="networkWrapper">
+                <svg class="connections" id="svgConnections"></svg>
+
+                <div class="layer" id="layerInput">
+                    <div class="node bias-node" id="node-b1">
+                        +1
+                        <div class="node-sub">Bias (b₁)</div>
+                    </div>
+                    <div class="node input-node" id="node-x1">
+                        x₁
+                        <div class="node-sub">Height</div>
+                    </div>
+                    <div class="node input-node" id="node-x2">
+                        x₂
+                        <div class="node-sub">Weight</div>
+                    </div>
+                </div>
+
+                <div class="layer" id="layerHidden">
+                    <div class="node bias-node" id="node-b2">
+                        +1
+                        <div class="node-sub">Bias (b₂)</div>
+                    </div>
+                    <div class="node hidden-node" id="node-h1">
+                        h₁
+                        <div class="node-sub">Neuron 1</div>
+                        <div class="node-math">ReLU(z₁)</div>
+                    </div>
+                    <div class="node hidden-node" id="node-h2">
+                        h₂
+                        <div class="node-sub">Neuron 2</div>
+                        <div class="node-math">ReLU(z₂)</div>
+                    </div>
+                    <div class="node hidden-node" id="node-h3">
+                        h₃
+                        <div class="node-sub">Neuron 3</div>
+                        <div class="node-math">ReLU(z₃)</div>
+                    </div>
+                </div>
+
+                <div class="layer" id="layerOutput">
+                    <div class="node output-node" id="node-y1">
+                        ŷ₁
+                        <div class="node-sub">Blood Pres.</div>
+                    </div>
+                    <div class="node output-node" id="node-y2">
+                        ŷ₂
+                        <div class="node-sub">Triglycerides</div>
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 15px;">
+                Hover over any node to highlight its computational dependencies (including inputs & biases).
+            </div>
         </div>
-        <div class="summary-item" style="border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">
-            <h3>Weight Parameters</h3>
-            <p style="color: #047857;">Matrix 1: 3×2 &nbsp;|&nbsp; Matrix 2: 2×3</p>
-        </div>
-        <div class="summary-item">
-            <h3>Output Predictions</h3>
-            <p style="color: #c2410c;">2 Target Metrics (Blood Pressure, Triglycerides)</p>
+
+        <div class="math-card">
+            <div class="math-section">
+                <h3>1. Input to Hidden Transition</h3>
+                <p class="formula-desc">
+                    Each hidden neuron first aggregates the weighted inputs, adds its corresponding bias term (<span class="badge bias">b₁</span>), and then passes the result through the <span class="badge activation">ReLU</span> activation function:
+                </p>
+                <div class="formula">
+                    h = ReLU( W₁·x + b₁ )
+                </div>
+                <p class="formula-desc"><strong>Fully Expanded Matrix Form:</strong></p>
+                <div class="formula" style="font-size: 0.85rem; text-align: left; padding: 15px;">
+                    ┌ h₁ ┐ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ┌ ┌ w₁₁  w₁₂ ┐ ┌ x₁ ┐ &nbsp; ┌ b₁₁ ┐ ┐<br>
+                    │ h₂ │ = ReLU │ │ w₂₁  w₂₂ │ │ x₂ │ + │ b₁₂ │ │<br>
+                    └ h₃ ┘ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └ └ w₃₁  w₃₂ ┘ └    ┘ &nbsp; └ b₁₃ ┘ ┘
+                </div>
+                <p class="formula-desc" style="font-style: italic;">
+                    *Where ReLU(z) = max(0, z). If the sum is negative, it gets clipped to 0.
+                </p>
+            </div>
+
+            <div class="math-section">
+                <h3>2. Hidden to Output Transition</h3>
+                <p class="formula-desc">
+                    The processed activation states <b>h</b> are mapped to the final predictions <b>ŷ</b> using the second weight matrix and the output layer biases (<span class="badge bias">b₂</span>):
+                </p>
+                <div class="formula">
+                    ŷ = W₂·h + b₂
+                </div>
+                <p class="formula-desc"><strong>Fully Expanded Matrix Form:</strong></p>
+                <div class="formula" style="font-size: 0.85rem; text-align: left; padding: 15px;">
+                    ┌ ŷ₁ ┐ &nbsp;&nbsp; ┌ w'₁₁  w'₁₂  w'₁₃ ┐ ┌ h₁ ┐ &nbsp; ┌ b'₁₁ ┐<br>
+                    └ ŷ₂ ┘ = │ w'₂₁  w'₂₂  w'₂₃ │ │ h₂ │ + │ b'₁₂ │<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └                      ┘ │ h₃ │ &nbsp; └      ┘<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └    ┘
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="workspace" id="canvas">
-        <svg class="connections-layer" id="edgeContainer"></svg>
+    <script>
+        function drawConnections() {
+            const svg = document.getElementById('svgConnections');
+            svg.innerHTML = ''; // Clear previous paths
+            
+            const inputs = ['node-x1', 'node-x2'];
+            const hiddens = ['node-h1', 'node-h2', 'node-h3'];
+            const outputs = ['node-y1', 'node-y2'];
 
-        <div class="column col-inputs">
-            <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; color: #854d0e;">INPUTS</div>
-            <div class="circle-node node-in" id="in-x1" data-val="170">
-                x₁
-                <div class="node-sub">Height</div>
-                <div style="font-size:0.75rem; font-weight:bold; margin-top:2px; color:#a16207;">170</div>
-            </div>
-            <div class="circle-node node-in" id="in-x2" data-val="70">
-                x₂
-                <div class="node-sub">Weight</div>
-                <div style="font-size:0.75rem; font-weight:bold; margin-top:2px; color:#a16207;">70</div>
-            </div>
-        </div>
+            const containerRect = document.getElementById('networkWrapper').getBoundingClientRect();
 
-        <div class="column col-matrix1">
-            <div class="matrix-box m1" id="box-w1">
-                <div class="matrix-title">WEIGHT MATRIX 1 (W₁)<br><span style="font-size:0.65rem;">3 × 2 Matrix</span></div>
-                <table class="matrix-table">
-                    <tr>
-                        <td style="background:#dcfce7;" title="Weight w11">w₁₁<br><span style="font-size:0.65rem; color:#15803d;">0.4</span></td>
-                        <td title="Weight w12">w₁₂<br><span style="font-size:0.65rem; color:#64748b;">-0.2</span></td>
-                    </tr>
-                    <tr>
-                        <td title="Weight w21">w₂₁<br><span style="font-size:0.65rem; color:#64748b;">0.1</span></td>
-                        <td style="background:#dcfce7;" title="Weight w22">w₂₂<br><span style="font-size:0.65rem; color:#15803d;">-0.2</span></td>
-                    </tr>
-                    <tr>
-                        <td title="Weight w31">w₃₁<br><span style="font-size:0.65rem; color:#64748b;">-0.3</span></td>
-                        <td title="Weight w32">w₃₂<br><span style="font-size:0.65rem; color:#64748b;">
+            function getCenter(id) {
+                const el = document.getElementById(id);
+                if (!
